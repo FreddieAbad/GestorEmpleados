@@ -6,9 +6,14 @@
 package com.empleado.ec.view;
 
 import com.empleado.ec.bo.EmpleadoBo;
+import com.empleado.ec.entity.Empleado;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import oracle.ons.Connection;
 
 /**
  *
@@ -16,19 +21,28 @@ import java.util.logging.Logger;
  */
 public class FrmEmpleado extends javax.swing.JFrame {
 
-    private EmpleadoBo ebo=new EmpleadoBo();
+    private EmpleadoBo ebo = new EmpleadoBo();
+
     public FrmEmpleado() {
         initComponents();
         try {
             listarEmpleado();
+            idMax();
+            setTitle("Formulario Empleado");
+            setLocationRelativeTo(null);
+            setResizable(false);
         } catch (SQLException ex) {
             Logger.getLogger(FrmEmpleado.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public void listarEmpleado() throws SQLException{
+
+    public void listarEmpleado() throws SQLException {
         ebo.listarEmpleado(tbEmpleado);
     }
 
+    public void idMax(){
+        txtIdEmpleado.setText(ebo.getMaxID()+"");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -170,28 +184,58 @@ public class FrmEmpleado extends javax.swing.JFrame {
 
             }
         ));
+        tbEmpleado.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbEmpleadoMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tbEmpleado);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 20, 380, 360));
 
         btnAgregar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnAgregar, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 400, -1, -1));
 
         btnEliminar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 400, -1, -1));
 
         btnEditar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 400, -1, -1));
 
         btnLimpiar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnLimpiar.setText("Limpiar");
+        btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimpiarActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnLimpiar, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 400, -1, -1));
 
         btnSalir.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnSalir.setText("Salir");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalirActionPerformed(evt);
+            }
+        });
         jPanel1.add(btnSalir, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 400, -1, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 780, 440));
@@ -215,9 +259,146 @@ public class FrmEmpleado extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_rdCasadoActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+        limpiar();
+    }//GEN-LAST:event_btnLimpiarActionPerformed
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        if (txtIdEmpleado.getText().isEmpty() || txtNombres.getText().isEmpty() || txtApellidos.getText().isEmpty() || txtCedula.getText().isEmpty()
+                || txtEdad.getText().isEmpty()) {
+
+            JOptionPane.showMessageDialog(null, "Llene todos los campos");
+        } else {
+            char estado, genero;
+            if (rdCasado.isSelected()) {
+                estado = 'C';
+            } else {
+                estado = 'S';
+            }
+            if (rdFemenino.isSelected()) {
+                genero = 'F';
+            } else {
+                genero = 'M';
+            }
+            Empleado emp = new Empleado();
+            emp.setIdEmpleado(Integer.parseInt(txtIdEmpleado.getText()));
+            emp.setNombres(txtNombres.getText());
+            emp.setApellidos(txtApellidos.getText());
+            emp.setCedula(txtCedula.getText());
+            emp.setEstadoCivil(estado);
+            emp.setGenero(genero);
+            emp.setEdad(Integer.parseInt(txtEdad.getText()));
+            String mensaje = ebo.agregarEmpleado(emp);
+            JOptionPane.showMessageDialog(null, mensaje);
+            limpiar();
+            try {
+                listarEmpleado();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        if (txtIdEmpleado.getText().isEmpty() || txtNombres.getText().isEmpty() || txtApellidos.getText().isEmpty() || txtCedula.getText().isEmpty()
+                || txtEdad.getText().isEmpty()) {
+
+            JOptionPane.showMessageDialog(null, "Llene todos los campos");
+        } else {
+            char estado, genero;
+            if (rdCasado.isSelected()) {
+                estado = 'C';
+            } else {
+                estado = 'S';
+            }
+            if (rdFemenino.isSelected()) {
+                genero = 'F';
+            } else {
+                genero = 'M';
+            }
+            Empleado emp = new Empleado();
+            emp.setIdEmpleado(Integer.parseInt(txtIdEmpleado.getText()));
+            emp.setNombres(txtNombres.getText());
+            emp.setApellidos(txtApellidos.getText());
+            emp.setCedula(txtCedula.getText());
+            emp.setEstadoCivil(estado);
+            emp.setGenero(genero);
+            emp.setEdad(Integer.parseInt(txtEdad.getText()));
+            String mensaje = ebo.modificarEmpleado(emp);
+            JOptionPane.showMessageDialog(null, mensaje);
+            limpiar();
+            try {
+                listarEmpleado();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+         if (txtIdEmpleado.getText().isEmpty() || txtNombres.getText().isEmpty() || txtApellidos.getText().isEmpty() || txtCedula.getText().isEmpty()
+                || txtEdad.getText().isEmpty()) {
+
+            JOptionPane.showMessageDialog(null, "Llene todos los campos");
+        } else {
+            char estado, genero;
+            if (rdCasado.isSelected()) {
+                estado = 'C';
+            } else {
+                estado = 'S';
+            }
+            if (rdFemenino.isSelected()) {
+                genero = 'F';
+            } else {
+                genero = 'M';
+            }
+            String mensaje = ebo.eliminarEmpleado(Integer.parseInt(txtIdEmpleado.getText()));
+            JOptionPane.showMessageDialog(null, mensaje);
+            limpiar();
+            try {
+                listarEmpleado();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void tbEmpleadoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbEmpleadoMouseClicked
+        int selection = tbEmpleado.rowAtPoint(evt.getPoint());
+        txtIdEmpleado.setText(tbEmpleado.getValueAt(selection,0)+"");
+        txtNombres.setText(tbEmpleado.getValueAt(selection,1)+"");
+        txtApellidos.setText(tbEmpleado.getValueAt(selection,2)+"");
+        txtCedula.setText(tbEmpleado.getValueAt(selection,3)+"");
+        String estado=tbEmpleado.getValueAt(selection, 4)+"";
+        if(estado.equals("S")){
+            rdSoltero.setSelected(true);
+        }else{
+            rdCasado.setSelected(true);
+        }
+        String genero=tbEmpleado.getValueAt(selection, 5)+"";
+        if(estado.equals("F")){
+            rdFemenino.setSelected(true);
+        }else{
+            rdMasculino.setSelected(true);
+        }
+        txtEdad.setText(tbEmpleado.getValueAt(selection,6)+"");
+    }//GEN-LAST:event_tbEmpleadoMouseClicked
+    public void limpiar() {
+        txtIdEmpleado.setText("");
+        txtNombres.setText("");
+        txtApellidos.setText("");
+        txtCedula.setText("");
+        txtEdad.setText("");
+        btnGroupEstado.clearSelection();
+        btnGroupGenero.clearSelection();
+        idMax();
+    }
+
+   
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

@@ -24,15 +24,16 @@ public class EmpleadoDao {
     public String agregarEmpleado(Connection con, Empleado emp){
         PreparedStatement pst=null;
         String sql="INSERT INTO EMPLEADO (IDEMPLEADO,NOMBRES,APELLIDOS,CEDULA,ESTADOCIVIL,GENERO,EDAD)"+
-                    " VALUES(EMPLEADO_SEQ.NEXTVAL,?,?,?,?,?,?)";
+                    " VALUES(?,?,?,?,?,?,?)";
         try {
             pst = con.prepareStatement(sql);
-            pst.setString(1, emp.getNombres());
-            pst.setString(2, emp.getApellidos());
-            pst.setString(3, emp.getCedula());
-            pst.setString(4, emp.getEstadoCivil()+"");
-            pst.setString(5, emp.getGenero()+"");
-            pst.setInt(6, emp.getEdad());
+            pst.setInt(1,emp.getIdEmpleado());
+            pst.setString(2, emp.getNombres());
+            pst.setString(3, emp.getApellidos());
+            pst.setString(4, emp.getCedula());
+            pst.setString(5, emp.getEstadoCivil()+"");
+            pst.setString(6, emp.getGenero()+"");
+            pst.setInt(7, emp.getEdad());
             mensaje="Guardado Correctamente";
             pst.execute();
             pst.close();
@@ -98,4 +99,22 @@ public class EmpleadoDao {
             JOptionPane.showMessageDialog(null, "No se puede listar la tabla");
         }
     }
+     public int getMaxID(Connection con){
+        int id=0;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        String sql="SELECT MAX(IDEMPLEADO)+1 FROM EMPLEADO"; //mUESTRA EL ID PRESENTE
+        try {
+            pst=con.prepareStatement(sql);
+            rs=pst.executeQuery();
+            if(rs.next()){
+                id=rs.getInt(1);
+            }
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            System.out.println("Error al mostrar ID"+e.getMessage());
+        }
+        return id;
+    } 
 }

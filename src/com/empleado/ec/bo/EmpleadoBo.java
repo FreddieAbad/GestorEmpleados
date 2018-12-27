@@ -74,4 +74,14 @@ public class EmpleadoBo {
             System.out.println(e.getMessage());
         }
     }
+    public int getMaxID(){
+        Connection con= Conexion.getConnection();
+        int id=edao.getMaxID(con);
+        try {
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return id;
+    }
 }
