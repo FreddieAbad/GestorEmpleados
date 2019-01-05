@@ -17,9 +17,17 @@ public class Test {
     Empleado emp=new Empleado();
     String mensaje="";
     public void insertar(){
-        emp.setNombres("Freddy");
+        /*emp.setNombres("Freddy");
         emp.setApellidos("Leon");
         emp.setCedula("0104496766");
+        emp.setEstadoCivil('S');
+        emp.setGenero('M');
+        emp.setEdad(25);*/
+        System.out.println(ebo.getMaxID());
+        emp.setIdEmpleado(ebo.getMaxID());
+        emp.setNombres("Leo");
+        emp.setApellidos("Abad");
+        emp.setCedula("0704496766");
         emp.setEstadoCivil('S');
         emp.setGenero('M');
         emp.setEdad(25);
