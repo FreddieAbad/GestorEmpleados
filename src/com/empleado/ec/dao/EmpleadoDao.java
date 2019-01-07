@@ -91,6 +91,7 @@ public class EmpleadoDao {
             while(rs.next()){
                 for (int i = 0; i < 7; i++) {
                     filas[i]=rs.getString(i+1);
+                   // System.out.println(rs.getString(i+1));
                 }
                 model.addRow(filas);
             }

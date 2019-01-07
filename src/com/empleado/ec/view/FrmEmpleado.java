@@ -306,7 +306,6 @@ public class FrmEmpleado extends javax.swing.JFrame {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         if (txtIdEmpleado.getText().isEmpty() || txtNombres.getText().isEmpty() || txtApellidos.getText().isEmpty() || txtCedula.getText().isEmpty()
                 || txtEdad.getText().isEmpty()) {
-
             JOptionPane.showMessageDialog(null, "Llene todos los campos");
         } else {
             char estado, genero;
